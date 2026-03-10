@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Score ESG</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: #fff;
+    font-family: 'Inter', sans-serif;
+    color: #4a4a4a;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    padding: 20px 0;
+    flex-wrap: wrap;
+    gap: 40px;
+  }
+  .charts-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+  margin-top: 40px;
+}
+
+.chart-box {
+  width: 100%; /* aumenta a largura do gráfico */
+}
+
+  .container {
+    width: 100%;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 0 8px rgb(0 0 0 / 0.05);
+    padding: 24px 24px 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .logo-score, .logo-esg { width: 140px; height: auto; object-fit: contain; margin-bottom: 8px; }
+  .logo-esg { margin-top: 4px; }
+  .subtitle { font-weight: 400; font-size: 14px; line-height: 18px; color: #7a7a7a; margin: 8px 0 20px; text-align: center; }
+  .btn-list { width: 100%; display: flex; flex-direction: column; gap: 12px; }
+  .btn-item { background: #fff; border: 1px solid #e6e6e6; border-radius: 8px; padding: 10px 14px; display: flex; align-items: center; gap: 12px; cursor: default; user-select: none; }
+  .btn-icon { width: 24px; height: 24px; flex-shrink: 0; object-fit: contain; }
+  .btn-text { font-weight: 600; font-size: 14px; color: #2a2a2a; }
+  .btn-analyze { margin-top: 20px; width: 100%; background-color: #2f7a4e; border: none; border-radius: 8px; color: #fff; font-weight: 600; font-size: 16px; line-height: 20px; padding: 12px 0; cursor: pointer; user-select: none; }
+  .footer-text { margin-top: 36px; font-weight: 400; font-size: 12px; line-height: 16px; color: #4a4a4a; text-align: center; }
+
+  /* Questionnaire styles */
+  .questionnaire-container { max-width: 375px; background: #fff; border-radius: 12px; box-shadow: 0 0 8px rgb(0 0 0 / 0.05); padding: 24px 20px 40px 20px; color: #3a5568; font-family: 'Inter', sans-serif; display: none; flex-direction: column; }
+  .questionnaire-container.active { display: flex; }
+  .questionnaire-container h1 { font-weight: 700; font-size: 20px; line-height: 24px; margin: 0 0 8px; }
+  .questionnaire-container p.description { font-weight: 400; font-size: 12px; line-height: 16px; margin: 0 0 20px; color: #6b7a8a; }
+  .question-block { margin-bottom: 20px; }
+  .question-block p.question, .question-block p.question.small { font-weight: 700; font-size: 12px; line-height: 16px; margin: 0 0 6px; color: #3a5568; }
+  .question-block p.question.small { font-size: 10px; line-height: 12px; }
+  .options-row { display: flex; gap: 8px; margin-bottom: 6px; flex-wrap: wrap; }
+  button.option { flex: 1; font-weight: 400; font-size: 10px; line-height: 12px; color: #3a5568; background: #f5f7fa; border: 1px solid #cbd2d9; border-radius: 4px; padding: 6px 0; cursor: pointer; min-width: 56px; text-align: center; user-select: none; transition: background-color 0.2s ease, border-color 0.2s ease; }
+  button.option.selected { background-color: #4a7a68; border-color: #4a7a68; color: #fff; }
+  .points { font-weight: 400; font-size: 10px; line-height: 12px; color: #3a5568; background: #f5f7fa; border: 1px solid #cbd2d9; border-radius: 4px; padding: 6px 8px; min-width: 56px; text-align: center; user-select: none; }
+  .btn-next { width: 100%; background-color: #4a7a68; border: none; border-radius: 4px; color: #fff; font-weight: 700; font-size: 14px; line-height: 16px; padding: 10px 0; cursor: pointer; margin-top: 10px; user-select: none; transition: background-color 0.2s ease; }
+  .btn-next:hover { background-color: #3a5e4f; }
+  .footer-logo { margin-top: 30px; display: flex; justify-content: center; }
+  .footer-logo img { width: 90px; height: auto; }
+  @media (max-width: 400px) { .questionnaire-container { max-width: 100%; padding: 20px 16px 40px 16px; } }
+</style>
+</head>
+<body>
+<!-- Adicione o script do ApexCharts -->
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+
+<div class="container" role="main" id="mainContainer">
+  <img src="Captura de tela 2025-08-28 204752.png" alt="Logo Score" class="logo-score"/>
+  <img src="Captura de tela 2025-08-28 204952.png" alt="Logo ESG" class="logo-esg"/>
+  <p class="subtitle">Medindo Hoje,<br/>Transformando o Amanhã</p>
+
+  <!-- Menu sem clique nos ícones -->
+  <div class="btn-list" role="list">
+    <div class="btn-item" role="listitem">
+      <img src="Captura de tela 2025-08-28 201523.png" alt="Ícone Ambiental" class="btn-icon"/>
+      <span class="btn-text">Ambiental</span>
+    </div>
+    <div class="btn-item" role="listitem">
+      <img src="Captura de tela 2025-08-28 201517.png" alt="Ícone Social" class="btn-icon"/>
+      <span class="btn-text">Social</span>
+    </div>
+    <div class="btn-item" role="listitem">
+      <img src="Captura de tela 2025-08-28 201510.png" alt="Ícone Governança" class="btn-icon"/>
+      <span class="btn-text">Governança</span>
+    </div>
+  </div>
+
+  <button class="btn-analyze" type="button" id="btnAnalyze">Analisar</button>
+  <p class="footer-text">Desenvolvido por Score ESG.</p>
+</div>
+ 
+<!-- Containers de questionários -->
+<div class="questionnaire-container" id="ambientalContainer">
+  <h1>Eixo Ambiental</h1>
+  <p class="description">Avalie os itens abaixo:</p>
+  <!-- 1 -->
+  <div class="question-block">
+    <p class="question">1- Utiliza energia do sistema de distribuição elétrica?</p>
+    <div class="options-row">
+      <button class="option" data-points="10.42">Totalmente</button>
+      <button class="option" data-points="20.84">Parcialmente</button>
+      <button class="option" data-points="41.67">Não utiliza</button>
+    </div>
+  </div>
+
+  <!-- 2 -->
+  <div class="question-block">
+    <p class="question">2- Utiliza energia de sistema de captação de energia solar (sistema fotovoltaico)?</p>
+    <div class="options-row">
+      <button class="option" data-points="41.67">Totalmente</button>
+      <button class="option" data-points="20.84">Parcialmente</button>
+      <button class="option" data-points="10.42">Não utiliza</button>
+    </div>
+  </div>
+
+  <!-- 3 -->
+  <div class="question-block">
+    <p class="question">3- Utiliza equipamentos economizadores de energia?</p>
+    <div class="options-row">
+      <button class="option" data-points="41.67">Sim</button>
+      <button class="option" data-points="0">Não</button>
+    </div>
+  </div>
+
+  <!-- 4 -->
+  <div class="question-block">
+    <p class="question">4- Utiliza equipamentos economizadores de água?</p>
+    <div class="options-row">
+      <button class="option" data-points="41.67">Sim</button>
+      <button class="option" data-points="0">Não</button>
+    </div>
+  </div>
+
+  <!-- 5 -->
+  <div class="question-block">
+    <p class="question">5- A construção do seu empreendimento foi feita utilizando-se de critérios bioclimáticos, por exemplo: utilizar ventilação e iluminação natural em áreas de circulação e em banheiros?</p>
+    <div class="options-row">
+      <button class="option" data-points="41.67">Sim</button>
+      <button class="option" data-points="0">Não</button>
+    </div>
+  </div>
+
+  <!-- 6 -->
+  <div class="question-block">
+    <p class="question">6- Nos últimos tempos seu empreendimento utiliza veículos elétricos?</p>
+    <div class="options-row">
+      <button class="option" data-points="41.67">Sim</button>
+      <button class="option" data-points="0">Não</button>
+    </div>
+  </div>
+
+  <!-- 7 -->
+  <div class="question-block">
+    <p class="question">7- Usa água do sistema de abastecimento de água?</p>
+    <div class="options-row">
+      <button class="option" data-points="41.67">Totalmente</button>
+      <button class="option" data-points="20.84">Parcialmente</button>
+      <button class="option" data-points="10.42">Não utiliza</button>
+    </div>
+  </div>
+
+  <!-- 8 -->
+  <div class="question-block">
+    <p class="question">8- Usa água de poços?</p>
+    <div class="options-row">
+      <button class="option" data-points="41.67">Totalmente</button>
+      <button class="option" data-points="20.84">Parcialmente</button>
+      <button class="option" data-points="10.42">Não utiliza</button>
+    </div>
+  </div>
+
+  <!-- 9 -->
+  <div class="question-block">
+    <p class="question">9- Utiliza sistemas emergenciais para abastecimento de água, por exemplo carros pipas?</p>
+    <div class="options-row">
+      <button class="option" data-points="10.42">Totalmente</button>
+      <button class="option" data-points="20.84">Parcialmente</button>
+      <button class="option" data-points="41.67">Não utiliza</button>
+    </div>
+  </div>
+
+  <!-- 10 -->
+  <div class="question-block">
+    <p class="question">10- Usa água de sistemas de coleta de águas de chuva?</p>
+    <div class="options-row">
+      <button class="option" data-points="41.67">Sim</button>
+      <button class="option" data-points="0">Não</button>
+    </div>
+  </div>
+
+  <!-- 11 -->
+  <div class="question-block">
+    <p class="question">11- Possui sistema de reuso de águas servidas/cinzas?</p>
+    <div class="options-row">
+      <button class="option" data-points="41.67">Sim</button>
+      <button class="option" data-points="0">Não</button>
+    </div>
+  </div>
+
+  <!-- 12 -->
+  <div class="question-block">
+    <p class="question">12- Lança esgotos na rede pública de coleta e tratamento?</p>
+    <div class="options-row">
+      <button class="option" data-points="41.67">Sim</button>
+      <button class="option" data-points="0">Não</button>
+    </div>
+  </div>
+
+  <!-- 13 -->
+  <div class="question-block">
+    <p class="question">13- Possui sistema individual de coleta e tratamento?</p>
+    <div class="options-row">
+      <button class="option" data-points="41.67">Sim</button>
+      <button class="option" data-points="0">Não</button>
+    </div>
+  </div>
+
+  <!-- 14 -->
+  <div class="question-block">
+    <p class="question">14- Nunca realiza lançamento de esgoto de forma irregular?</p>
+    <div class="options-row">
+      <button class="option" data-points="41.67">Sim</button>
+      <button class="option" data-points="0">Não</button>
+    </div>
+  </div>
+
+  <!-- 15 -->
+  <div class="question-block">
+    <p class="question">15- Envia todos os resíduos para o serviço de coleta municipal?</p>
+    <div class="options-row">
+      <button class="option" data-points="10.42">Totalmente</button>
+      <button class="option" data-points="41.67">Parcialmente</button>
+    </div>
+  </div>
+
+  <!-- 16 -->
+  <div class="question-block">
+    <p class="question">16- Faz coleta seletiva de resíduos?</p>
+    <div class="options-row">
+      <button class="option" data-points="41.67">Totalmente</button>
+      <button class="option" data-points="20.84">Parcialmente</button>
+    </div>
+  </div>
+
+  <!-- 17 -->
+  <div class="question-block">
+    <p class="question">17- Possui alguma política de economia circular, por exemplo: logística reversa, reciclagem, compostagem, reutilização?</p>
+    <div class="options-row">
+      <button class="option" data-points="41.67">Sim</button>
+      <button class="option" data-points="0">Não</button>
+    </div>
+  </div>
+
+  <!-- 18 -->
+  <div class="question-block">
+    <p class="question">18- Em suas atividades mantém a preservação e a conservação da biodiversidade?</p>
+    <div class="options-row">
+      <button class="option" data-points="41.67">Sim</button>
+      <button class="option" data-points="0">Não</button>
+    </div>
+  </div>
+
+  <!-- 19 -->
+  <div class="question-block">
+    <p class="question">19- Suas atividades não causam nenhum tipo de poluição ao solo?</p>
+    <div class="options-row">
+      <button class="option" data-points="41.67">Sim</button>
+      <button class="option" data-points="0">Não</button>
+    </div>
+  </div>
+
+  <!-- 20 -->
+  <div class="question-block">
+    <p class="question">20- A construção do seu empreendimento foi planejada de maneira a garantir áreas permeáveis que garantem a infiltração das águas de chuva?</p>
+    <div class="options-row">
+      <button class="option" data-points="41.67">Sim</button>
+      <button class="option" data-points="0">Não</button>
+    </div>
+  </div>
+
+  <!-- 21 -->
+  <div class="question-block">
+    <p class="question">21- Faz o manejo adequado de produtos perigosos?</p>
+    <div class="options-row">
+      <button class="option" data-points="41.67">Sim</button>
+      <button class="option" data-points="0">Não</button>
+      <button class="option" data-points="41.67">Não se aplica</button>
+    </div>
+  </div>
+
+  <!-- 22 -->
+  <div class="question-block">
+    <p class="question">22- Tem programa de manutenção de equipamentos para minimizar a emissão de poluentes?</p>
+    <div class="options-row">
+      <button class="option" data-points="41.67">Sim</button>
+      <button class="option" data-points="0">Não</button>
+      <button class="option" data-points="41.67">Não se aplica</button>
+    </div>
+  </div>
+
+  <!-- 23 -->
+  <div class="question-block">
+    <p class="question">23- Tem programa de manutenção de equipamentos para minimizar ruídos e vibrações?</p>
+    <div class="options-row">
+      <button class="option" data-points="41.67">Sim</button>
+      <button class="option" data-points="0">Não</button>
+      <button class="option" data-points="41.67">Não se aplica</button>
+    </div>
+  </div>
+
+  <!-- 24 -->
+  <div class="question-block">
+    <p class="question">24- Possui política de gerenciamento de áreas contaminadas?</p>
+    <div class="options-row">
+      <button class="option" data-points="41.67">Sim</button>
+      <button class="option" data-points="0">Não</button>
+      <button class="option" data-points="41.67">Não se aplica</button>
+    </div>
+  </div>
+  <button class="btn-next" data-next="socialContainer">Próximo</button>
+</div>
+
+<div class="questionnaire-container" id="socialContainer">
+
+  <h1>Eixo Social</h1>
+  <p class="description">Avalie os itens abaixo:</p>
+
+  <!-- 1 -->
+  <div class="question-block">
+    <p class="question">1- Os empregos são formais?</p>
+    <div class="options-row">
+      <button class="option" data-points="111.11">Totalmente</button>
+      <button class="option" data-points="55.55">Parcialmente</button>
+      <button class="option" data-points="0">Não</button>
+    </div>
+  </div>
+
+  <!-- 2 -->
+  <div class="question-block">
+    <p class="question">2- Tem política de igualdade de gênero na contratação de trabalhadores?</p>
+    <div class="options-row">
+      <button class="option" data-points="111.11">Sim</button>
+      <button class="option" data-points="0">Não</button>
+    </div>
+  </div>
+
+  <!-- 3 -->
+  <div class="question-block">
+    <p class="question">3- Tem política de diversidade e inclusão na contratação de trabalhadores, por exemplo contratar pessoas da comunidade LGBTQIAPN+, pessoas indígenas, pessoas quilombolas, pessoas com deficiência?</p>
+    <div class="options-row">
+      <button class="option" data-points="111.11">Sim</button>
+      <button class="option" data-points="0">Não</button>
+    </div>
+  </div>
+
+  <!-- 4 -->
+  <div class="question-block">
+    <p class="question">4- Nunca oferece empregos para menores de 14 anos?</p>
+    <div class="options-row">
+      <button class="option" data-points="111.11">Sim</button>
+      <button class="option" data-points="0">Não</button>
+    </div>
+  </div>
+
+  <!-- 5 -->
+  <div class="question-block">
+    <p class="question">5- Tem política de saúde e segurança no trabalho?</p>
+    <div class="options-row">
+      <button class="option" data-points="111.11">Sim</button>
+      <button class="option" data-points="0">Não</button>
+    </div>
+  </div>
+
+  <!-- 6 -->
+  <div class="question-block">
+    <p class="question">6- Tem jornada de trabalho justa e de acordo com a legislação vigente?</p>
+    <div class="options-row">
+      <button class="option" data-points="111.11">Sim</button>
+      <button class="option" data-points="0">Não</button>
+    </div>
+  </div>
+
+  <!-- 7 -->
+  <div class="question-block">
+    <p class="question">7- Seu empreendimento possui uma política de remuneração e benefícios para os funcionários, por exemplo: comissões pelo batimento de metas, dias de descanso após cumprimento de metas, licença paternidade?</p>
+    <div class="options-row">
+      <button class="option" data-points="111.11">Sim</button>
+      <button class="option" data-points="0">Não</button>
+    </div>
+  </div>
+
+  <!-- 8 -->
+  <div class="question-block">
+    <p class="question">8- Seu empreendimento possui uma política de retorno social à comunidade vizinha, por exemplo: curso de capacitação para comunidade, algum tipo de ação social?</p>
+    <div class="options-row">
+      <button class="option" data-points="111.11">Sim</button>
+      <button class="option" data-points="0">Não</button>
+      <button class="option" data-points="111.11">Não se aplica</button>
+    </div>
+  </div>
+
+  <!-- 9 -->
+  <div class="question-block">
+    <p class="question">9- Seu empreendimento prioriza a contratação de mão de obra local?</p>
+    <div class="options-row">
+      <button class="option" data-points="111.11">Sim</button>
+      <button class="option" data-points="0">Não</button>
+      <button class="option" data-points="111.11">Não se aplica</button>
+    </div>
+  </div>
+
+  
+  <button class="btn-next" data-next="governancaContainer">Próximo</button>
+</div>
+
+<div class="questionnaire-container" id="governancaContainer">
+  <h1>Eixo Governança</h1>
+  <p class="description">Avalie os itens abaixo:</p>
+
+  <!-- 1 -->
+  <div class="question-block">
+    <p class="question">1- Tem definição clara da missão do seu negócio?</p>
+    <div class="options-row">
+      <button class="option" data-points="71.42">Sim</button>
+      <button class="option" data-points="0">Não</button>
+    </div>
+  </div>
+
+  <!-- 2 -->
+  <div class="question-block">
+    <p class="question">2- Seu empreendimento tem política de compromisso com a preservação ambiental?</p>
+    <div class="options-row">
+      <button class="option" data-points="71.42">Sim</button>
+      <button class="option" data-points="0">Não</button>
+    </div>
+  </div>
+
+  <!-- 3 -->
+  <div class="question-block">
+    <p class="question">3- Seu empreendimento tem definição clara dos riscos sociais e ambientais que podem afetar a longevidade do seu negócio?</p>
+    <div class="options-row">
+      <button class="option" data-points="71.42">Sim</button>
+      <button class="option" data-points="0">Não</button>
+    </div>
+  </div>
+
+  <!-- 4 -->
+  <div class="question-block">
+    <p class="question">4- Seu empreendimento tem política de minimização de impactos ambientais e sociais?</p>
+    <div class="options-row">
+      <button class="option" data-points="71.42">Sim</button>
+      <button class="option" data-points="0">Não</button>
+    </div>
+  </div>
+
+  <!-- 5 -->
+  <div class="question-block">
+    <p class="question">5- Tem definição clara do público-alvo do seu negócio?</p>
+    <div class="options-row">
+      <button class="option" data-points="71.42">Sim</button>
+      <button class="option" data-points="0">Não</button>
+    </div>
+  </div>
+
+  <!-- 6 -->
+  <div class="question-block">
+    <p class="question">6- Tem conhecimento da origem de todas as matérias-primas utilizadas na sua produção?</p>
+    <div class="options-row">
+      <button class="option" data-points="71.42">Sim</button>
+      <button class="option" data-points="0">Não</button>
+    </div>
+  </div>
+
+  <!-- 7 -->
+  <div class="question-block">
+    <p class="question">7- Tem definição clara das despesas com insumos em sua produção?</p>
+    <div class="options-row">
+      <button class="option" data-points="71.42">Sim</button>
+      <button class="option" data-points="0">Não</button>
+    </div>
+  </div>
+
+  <!-- 8 -->
+  <div class="question-block">
+    <p class="question">8- Qual(is) critério(s) utiliza para a precificação de seus produtos?</p>
+    <div class="options-row">
+      <button class="option" data-points="35.71">Os principais critérios são matéria-prima e mão de obra</button>
+      <button class="option" data-points="35.71">Os principais critérios são mão de obra e pagamentos de impostos e licenças</button>
+      <button class="option" data-points="35.71">Os principais critérios são matéria-prima e margem de lucro</button>
+      <button class="option" data-points="35.71">Os principais critérios são matéria-prima, mão de obra e margem de lucro</button>
+      <button class="option" data-points="71.42">Utilizamos todos os critérios citados anteriormente</button>
+    </div>
+  </div>
+
+  <!-- 9 -->
+  <div class="question-block">
+    <p class="question">9- Possui alguma certificação para Pequenas e Médias Empresas (PME)?</p>
+    <div class="options-row">
+      <button class="option" data-points="71.42">Sim</button>
+      <button class="option" data-points="0">Não</button>
+    </div>
+  </div>
+
+  <!-- 10 -->
+  <div class="question-block">
+    <p class="question">10- Possui Certificado Digital (e-CNPJ)?</p>
+    <div class="options-row">
+      <button class="option" data-points="71.42">Sim</button>
+      <button class="option" data-points="0">Não</button>
+    </div>
+  </div>
+
+  <!-- 11 -->
+  <div class="question-block">
+    <p class="question">11- Possui alguma política de gestão da qualidade baseada na ISO 9001?</p>
+    <div class="options-row">
+      <button class="option" data-points="71.42">Sim</button>
+      <button class="option" data-points="0">Não</button>
+    </div>
+  </div>
+
+  <!-- 12 -->
+  <div class="question-block">
+    <p class="question">12- Possui alguma política de gestão de riscos baseada na ISO 31000?</p>
+    <div class="options-row">
+      <button class="option" data-points="71.42">Sim</button>
+      <button class="option" data-points="0">Não</button>
+    </div>
+  </div>
+
+  <!-- 13 -->
+  <div class="question-block">
+    <p class="question">13- Seu empreendimento tem uma política definida de relacionamento e compromisso com clientes, fornecedores e demais parceiros?</p>
+    <div class="options-row">
+      <button class="option" data-points="71.42">Sim</button>
+      <button class="option" data-points="0">Não</button>
+    </div>
+  </div>
+
+  <!-- 14 -->
+  <div class="question-block">
+    <p class="question">14- Seu negócio aceita várias formas e condições de pagamento, dinheiro físico, PIX, cartão de débito e crédito, boleto bancário?</p>
+    <div class="options-row">
+      <button class="option" data-points="71.42">Sim</button>
+      <button class="option" data-points="0">Não</button>
+    </div>
+  </div>
+
+  <!-- Botão voltar ao início -->
+<button class="btn-next" id="btnFinalizar">Finalizar</button>
+</div>
+
+<!-- Gráficos -->
+ <div class="charts-container">
+  <div id="chartAmbiental" class="chart-box"></div>
+  <div id="chartSocial" class="chart-box"></div>
+  <div id="chartGovernanca" class="chart-box"></div>
+  <div id="chartESG" class="chart-box"></div>
+</div>
+
+<div class="charts-container" id="chartsContainer" style="display:none;">
+  <div id="chartAmbiental" style="width:100%; height:250px;"></div>
+  <div id="chartSocial" style="width:100%; height:250px;"></div>
+  <div id="chartGovernanca" style="width:100%; height:250px;"></div>
+  <div id="chartESG" style="width:100%; height:300px;"></div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+  function showContainer(id) {
+    document.querySelectorAll('.questionnaire-container').forEach(c => c.style.display='none');
+    document.getElementById(id).style.display='flex';
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+
+  // Seleção de opções
+  document.addEventListener('click', e => {
+    if(e.target.classList.contains('option')){
+      const group = e.target.closest('.options-row');
+      group.querySelectorAll('.option').forEach(btn => btn.classList.remove('selected'));
+      e.target.classList.add('selected');
+    }
+  });
+
+  // Botão analisar
+  document.getElementById('btnAnalyze').addEventListener('click', () => {
+    document.getElementById('mainContainer').style.display='none';
+    showContainer('ambientalContainer');
+  });
+
+  // Botões próximo
+  document.querySelectorAll('.btn-next').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const container = btn.closest('.questionnaire-container');
+      const allAnswered = Array.from(container.querySelectorAll('.options-row')).every(row => row.querySelector('.option.selected'));
+      if(!allAnswered){
+        alert('Selecione uma opção para cada pergunta antes de continuar.');
+        return;
+      }
+      if(btn.id === 'btnFinalizar'){
+        calcularTotais();
+        document.querySelectorAll('.questionnaire-container').forEach(c => c.style.display='none');
+        document.getElementById('chartsContainer').style.display='flex';
+      } else {
+        showContainer(btn.dataset.next);
+      }
+    });
+  });
+
+  // Calcular pontos
+  function calcularTotais() {
+    function soma(container){
+      let total=0;
+      container.querySelectorAll('.option.selected').forEach(btn=>total+=parseFloat(btn.dataset.points));
+      return total;
+    }
+    const pontosAmbiental = soma(document.getElementById('ambientalContainer'));
+    const pontosSocial = soma(document.getElementById('socialContainer'));
+    const pontosGovernanca = soma(document.getElementById('governancaContainer'));
+    gerarGraficos(pontosAmbiental, pontosSocial, pontosGovernanca);
+  }
+
+  // Gerar gráficos
+function gerarGraficos(pontosAmbiental, pontosSocial, pontosGovernanca){
+    const maxIndividual = 1000;
+    const maxESG = 3000;
+
+    // Converte para % (0-100) para o radialBar
+    const ambientalPercent = (pontosAmbiental / maxIndividual) * 100;
+    const socialPercent = (pontosSocial / maxIndividual) * 100;
+    const governancaPercent = (pontosGovernanca / maxIndividual) * 100;
+    const esgPercent = ((pontosAmbiental + pontosSocial + pontosGovernanca) / maxESG) * 100;
+
+    function opcoes(label, percent, valorReal, cor){
+        return {
+            chart:{ type:'radialBar', height:250 },
+            series:[percent],
+            labels:[label],
+            colors:[cor],
+            plotOptions:{
+                radialBar:{
+                    startAngle:-90,
+                    endAngle:90,
+                    hollow:{ size:'60%' },
+                    track:{ background:'#eee' },
+                    dataLabels:{
+                        name:{ show:true },
+                        value:{
+                            show:true,
+                            fontSize:'16px',
+                            formatter:()=>valorReal // mostra o valor real no centro
+                        }
+                    }
+                }
+            },
+            stroke:{ lineCap:'round' }
+        };
+    }
+
+    new ApexCharts(document.querySelector("#chartAmbiental"), opcoes('Ambiental', ambientalPercent, pontosAmbiental, '#2f7a4e')).render();
+    new ApexCharts(document.querySelector("#chartSocial"), opcoes('Social', socialPercent, pontosSocial, '#f18c4a')).render();
+    new ApexCharts(document.querySelector("#chartGovernanca"), opcoes('Governança', governancaPercent, pontosGovernanca, '#3a6ff0')).render();
+    new ApexCharts(document.querySelector("#chartESG"), opcoes('ESG Geral', esgPercent, pontosAmbiental + pontosSocial + pontosGovernanca, '#8e44ad')).render();
+}
+
+
+});
+</script>
+
+</body>
+</html>
